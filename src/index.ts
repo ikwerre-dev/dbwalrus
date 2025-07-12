@@ -407,6 +407,43 @@ function decryptDataAdvanced(encryptedData: string, key: string): string {
     return decrypted;
 }
 
+async function deleteBlob(blobObjectId: string) {
+    try {
+        const result = await client.walrus.executeDeleteBlobTransaction({
+            signer: keypair,
+            blobObjectId: blobObjectId,
+        });
+        return result;
+    } catch (error) {
+        throw new Error(`Failed to delete blob: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+app.delete('/delete-blob/:blobObjectId', async (req: Request, res: Response) => {
+    try {
+        const { blobObjectId } = req.params;
+
+        if (!blobObjectId) {
+            return res.status(400).json({ error: 'Blob object ID is required' });
+        }
+
+        const result = await deleteBlob(blobObjectId);
+        
+        res.json({
+            success: true,
+            blobObjectId,
+            result,
+            message: 'Blob deleted successfully from Walrus'
+        });
+    } catch (error) {
+        console.error('Error deleting blob:', error);
+        res.status(500).json({
+            error: 'Failed to delete blob',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+
 app.get('/generate-advanced-encryption-key', (req: Request, res: Response) => {
     try {
         const encryptionKeyData = generateAdvancedEncryptionKey();
