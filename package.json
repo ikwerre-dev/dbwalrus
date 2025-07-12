@@ -1,0 +1,33 @@
+{
+  "name": "dbwalrus",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikwerre-dev/dbwalrus.git"
+  },
+  "keywords": [],
+  "author": "ikwerre-dev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ikwerre-dev/dbwalrus/issues"
+  },
+  "homepage": "https://github.com/ikwerre-dev/dbwalrus#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "@mysten/walrus": "latest",
+    "@mysten/sui": "latest"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.13",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
