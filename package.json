@@ -22,13 +22,16 @@
   "dependencies": {
     "express": "^5.1.0",
     "@mysten/walrus": "latest",
-    "@mysten/sui": "latest"
+    "@mysten/sui": "latest",
+    "valibot": "^0.30.0"
+
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "valibot": "latest"
+    "valibot": "^0.30.0"
+
   }
 }
