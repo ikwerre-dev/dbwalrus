@@ -371,40 +371,46 @@ app.post('/swap-sui-to-wal', async (req: Request, res: Response) => {
 
 
 function generateAdvancedEncryptionKey(): { key: string; salt: string; iterations: number } {
-    const salt = crypto.randomBytes(32);
-    const entropy = crypto.randomBytes(64);
+    const salt = CryptoJS.lib.WordArray.random(32);
+    const entropy = CryptoJS.lib.WordArray.random(64);
     const iterations = 100000 + Math.floor(Math.random() * 50000);
-    const key = crypto.pbkdf2Sync(entropy, salt, iterations, 32, 'sha512');
+    const key = CryptoJS.PBKDF2(entropy.toString(), salt, {
+        keySize: 256/32,
+        iterations: iterations,
+        hasher: CryptoJS.algo.SHA512
+    });
 
     return {
-        key: key.toString('hex'),
-        salt: salt.toString('hex'),
+        key: key.toString(),
+        salt: salt.toString(),
         iterations
     };
 }
 
 function encryptDataAdvanced(data: string, keyData: { key: string; salt: string; iterations: number }): string {
-    const algorithm = 'aes-256-cbc';
-    const iv = crypto.randomBytes(16);
-    const keyBuffer = Buffer.from(keyData.key, 'hex');
-    const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
-    let encrypted = cipher.update(data, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
+    const iv = CryptoJS.lib.WordArray.random(16);
+    const key = CryptoJS.enc.Hex.parse(keyData.key);
+    const encrypted = CryptoJS.AES.encrypt(data, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
     const metadata = JSON.stringify({ salt: keyData.salt, iterations: keyData.iterations });
-    return Buffer.from(metadata).toString('base64') + ':' + iv.toString('hex') + ':' + encrypted;
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(metadata)) + ':' + iv.toString() + ':' + encrypted.toString();
 }
 
 function decryptDataAdvanced(encryptedData: string, key: string): string {
-    const algorithm = 'aes-256-cbc';
     const parts = encryptedData.split(':');
-    const metadata = JSON.parse(Buffer.from(parts[0], 'base64').toString());
-    const iv = Buffer.from(parts[1], 'hex');
+    const metadata = JSON.parse(CryptoJS.enc.Base64.parse(parts[0]).toString(CryptoJS.enc.Utf8));
+    const iv = CryptoJS.enc.Hex.parse(parts[1]);
     const encrypted = parts[2];
-    const keyBuffer = Buffer.from(key, 'hex');
-    const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
+    const keyWordArray = CryptoJS.enc.Hex.parse(key);
+    const decrypted = CryptoJS.AES.decrypt(encrypted, keyWordArray, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
 async function deleteBlob(blobObjectId: string) {
