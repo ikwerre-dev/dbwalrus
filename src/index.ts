@@ -6,8 +6,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { coinWithBalance } from '@mysten/sui/transactions'
 import { Signer } from '@mysten/sui/dist/cjs/cryptography'
 import { parseStructTag } from '@mysten/sui/utils'
-import * as crypto from 'crypto'
-
+import CryptoJS from 'crypto-js'
 
 const app = express()
 const port = 4000
@@ -19,7 +18,7 @@ app.use(express.text())
 const useFundedKeyPair = false;
 
 const NETWORK = "testnet";
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 1;
 const RETRY_DELAY = 1000;
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -182,8 +181,8 @@ app.post('/upload-sql', async (req: Request, res: Response) => {
         }
 
         if (!encryptionKey.key || !encryptionKey.salt || !encryptionKey.iterations) {
-            return res.status(400).json({ 
-                error: 'encryptionKey must be an object with key, salt, and iterations properties' 
+            return res.status(400).json({
+                error: 'encryptionKey must be an object with key, salt, and iterations properties'
             });
         }
 
@@ -375,7 +374,7 @@ function generateAdvancedEncryptionKey(): { key: string; salt: string; iteration
     const entropy = CryptoJS.lib.WordArray.random(64);
     const iterations = 100000 + Math.floor(Math.random() * 50000);
     const key = CryptoJS.PBKDF2(entropy.toString(), salt, {
-        keySize: 256/32,
+        keySize: 256 / 32,
         iterations: iterations,
         hasher: CryptoJS.algo.SHA512
     });
@@ -434,7 +433,7 @@ app.delete('/delete-blob/:blobObjectId', async (req: Request, res: Response) => 
         }
 
         const result = await deleteBlob(blobObjectId);
-        
+
         res.json({
             success: true,
             blobObjectId,
