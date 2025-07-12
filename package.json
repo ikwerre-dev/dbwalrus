@@ -20,11 +20,11 @@
   "homepage": "https://github.com/ikwerre-dev/dbwalrus#readme",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0",
-    "@mysten/walrus": "latest",
     "@mysten/sui": "latest",
+    "@mysten/walrus": "latest",
+    "crypto": "^1.0.1",
+    "express": "^5.1.0",
     "valibot": "^0.30.0"
-
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
@@ -32,6 +32,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "valibot": "^0.30.0"
-
   }
 }
