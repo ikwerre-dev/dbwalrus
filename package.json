@@ -23,6 +23,7 @@
     "@mysten/sui": "latest",
     "@mysten/walrus": "latest",
     "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.1",
     "crypto-js": "^4.2.0",
     "express": "^5.1.0",
     "valibot": "^0.30.0"
