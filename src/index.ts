@@ -9,7 +9,7 @@ import { parseStructTag } from '@mysten/sui/utils'
 import CryptoJS from 'crypto-js'
 
 const app = express()
-const port = 4000
+const port = 39260
 
 app.use(express.json())
 app.use(express.text())
