@@ -20,8 +20,8 @@
   "homepage": "https://github.com/ikwerre-dev/dbwalrus#readme",
   "description": "",
   "dependencies": {
-    "@mysten/sui": "latest",
-    "@mysten/walrus": "latest",
+    "@mysten/sui": "^1.36.0",
+    "@mysten/walrus": "^0.3.0",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.1",
     "crypto-js": "^4.2.0",

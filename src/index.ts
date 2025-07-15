@@ -28,8 +28,8 @@ const client = new SuiClient({
     network: NETWORK,
 }).$extend(
     WalrusClient.experimental_asClientExtension({
-        fanOut: {
-            host: 'https://fan-out.testnet.walrus.space',
+        uploadRelay: {
+            host: 'https://upload-relay.testnet.walrus.space',
             sendTip: {
                 max: 1_000,
             },
@@ -115,16 +115,18 @@ app.get('/balance', async (req: Request, res: Response) => {
 async function saveSqlBlob(data: unknown, keypair: Signer, encryptionKey?: { key: string; salt: string; iterations: number }): Promise<{ blobId: string; timeSpent: number, blobObject: any, encryptionKey?: { key: string; salt: string; iterations: number } }> {
     const startTime = Date.now();
     let lastError: Error | null = null;
-
+    console.log('start saving blob')
+    console.log(startTime)
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
             let dataToStore = typeof data === 'string' ? data : JSON.stringify(data);
             let returnedEncryptionKey: { key: string; salt: string; iterations: number } | undefined;
-
+            console.log('before encrption')
             if (encryptionKey) {
                 dataToStore = encryptDataAdvanced(dataToStore, encryptionKey);
                 returnedEncryptionKey = encryptionKey;
             }
+            console.log('current time: ',(Date.now() - startTime) / 1000)
 
             const file = new TextEncoder().encode(dataToStore);
 
@@ -153,6 +155,7 @@ async function saveSqlBlob(data: unknown, keypair: Signer, encryptionKey?: { key
         } catch (error) {
             lastError = error as Error;
             console.error(`Attempt ${i + 1} failed:`, error);
+            console.log('failed time: ',(Date.now() - startTime) / 1000)
 
             if (i < MAX_RETRIES - 1) {
                 const delay = RETRY_DELAY * Math.pow(2, i);
@@ -175,17 +178,17 @@ async function retrieveBlob(blobId: string) {
 app.post('/upload-sql', async (req: Request, res: Response) => {
     try {
         const { data, encryptionKey } = req.body;
-
+        console.log('data gotten')
         if (!data || !encryptionKey) {
             return res.status(400).json({ error: 'Data and encryptionKey is required in request body' });
         }
-
+        console.log('data parsed')
         if (!encryptionKey.key || !encryptionKey.salt || !encryptionKey.iterations) {
             return res.status(400).json({
                 error: 'encryptionKey must be an object with key, salt, and iterations properties'
             });
         }
-
+        console.log('before save blob')
         const result = await saveSqlBlob(data, keypair, encryptionKey);
         res.json(result);
     } catch (error) {
